@@ -3,13 +3,14 @@ package com.cybersource.inappsdk.connectors.inapp;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.cybersource.inappsdk.connectors.inapp.envelopes.InAppAndroidPayEnvelope;
+import com.cybersource.inappsdk.connectors.inapp.transaction.client.InAppTransaction;
+import com.cybersource.inappsdk.datamodel.SDKGateway;
+import com.cybersource.inappsdk.datamodel.transaction.callbacks.SDKApiConnectionCallback;
 import com.cybersource.inappsdk.common.error.SDKError;
 import com.cybersource.inappsdk.connectors.inapp.envelopes.InAppEncryptEnvelope;
 import com.cybersource.inappsdk.connectors.inapp.receivers.TransactionResultReceiver;
-import com.cybersource.inappsdk.datamodel.SDKGateway;
 import com.cybersource.inappsdk.datamodel.response.SDKGatewayResponse;
-import com.cybersource.inappsdk.datamodel.transaction.SDKTransactionObject;
-import com.cybersource.inappsdk.datamodel.transaction.callbacks.SDKApiConnectionCallback;
 
 /**
  * Created by fzubair on 10/6/2015.
@@ -30,7 +31,7 @@ class InAppGateway extends SDKGateway implements TransactionResultReceiver.Recei
     }
 
     @Override
-    protected boolean performEncryption(SDKTransactionObject transactionObject, SDKApiConnectionCallback applicationConnectionCallback) {
+    protected boolean performEncryption(InAppTransaction transactionObject, SDKApiConnectionCallback applicationConnectionCallback) {
         if(transactionInProgress)
             return transactionInProgress;
         if (transactionObject == null)
@@ -40,6 +41,24 @@ class InAppGateway extends SDKGateway implements TransactionResultReceiver.Recei
         transactionInProgress = true;
         this.connectionCallback = applicationConnectionCallback;
         InAppEncryptEnvelope envelope = new InAppEncryptEnvelope(transactionObject, merchantId,
+                messageSignature);
+        if (envelope == null)
+            return false;
+        InAppConnectionService.startActionConnect(InAppSDKApiClient.getContext().get(), envelope, resultReceiver);
+        return transactionInProgress;
+    }
+
+    @Override
+    protected boolean performAndroidPayTransaction(InAppTransaction transactionObject, SDKApiConnectionCallback applicationConnectionCallback) {
+        if(transactionInProgress)
+            return transactionInProgress;
+        if (transactionObject == null)
+            return false;
+
+        registerResultReceiver();
+        transactionInProgress = true;
+        this.connectionCallback = applicationConnectionCallback;
+        InAppAndroidPayEnvelope envelope = new InAppAndroidPayEnvelope(transactionObject, merchantId,
                 messageSignature);
         if (envelope == null)
             return false;

@@ -7,18 +7,18 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Xml;
 
+import com.cybersource.inappsdk.connectors.inapp.envelopes.InAppBaseEnvelope;
+import com.cybersource.inappsdk.soap.connection.SDKConnectionConstants;
+import com.cybersource.inappsdk.soap.parser.SDKSoapParser;
 import com.cybersource.inappsdk.common.error.SDKError;
 import com.cybersource.inappsdk.common.error.SDKGatewayError;
 import com.cybersource.inappsdk.common.error.SDKInternalError;
 import com.cybersource.inappsdk.common.utils.SDKUtils;
 import com.cybersource.inappsdk.connectors.inapp.connection.InAppConnectionData;
-import com.cybersource.inappsdk.connectors.inapp.envelopes.InAppBaseEnvelope;
 import com.cybersource.inappsdk.connectors.inapp.receivers.TransactionResultReceiver;
 import com.cybersource.inappsdk.connectors.inapp.responses.InAppResponseObject;
 import com.cybersource.inappsdk.datamodel.SDKGatewayErrorMapping;
 import com.cybersource.inappsdk.datamodel.response.SDKGatewayResponse;
-import com.cybersource.inappsdk.soap.connection.SDKConnectionConstants;
-import com.cybersource.inappsdk.soap.parser.SDKSoapParser;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -170,6 +170,7 @@ public class InAppConnectionService extends IntentService {
             SDKGatewayResponse response = (SDKGatewayResponse)result;
             resultData.putParcelable(SERVICE_RESULT_RESPONSE_KEY, response);
             switch (response.getType()) {
+                case SDK_ANDROID_PAY:
                 case SDK_ENCRYPTION:
                     resultReceiver.send(SERVICE_RESULT_CODE_SDK_RESPONSE, resultData);
                     break;

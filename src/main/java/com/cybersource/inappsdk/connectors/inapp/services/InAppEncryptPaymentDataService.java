@@ -13,7 +13,6 @@ public class InAppEncryptPaymentDataService extends InAppBaseService {
 	public final String RUN = "run";
 
 	public String run;
-    String commerceIndicator;
 
 	/**
 	 * All fields in constructor are required
@@ -22,7 +21,6 @@ public class InAppEncryptPaymentDataService extends InAppBaseService {
 	 */
 	public InAppEncryptPaymentDataService(boolean run, String commerceIndicator) {
 		this.run = String.valueOf(run);
-        this.commerceIndicator = commerceIndicator;
 	}
 
 	@Override

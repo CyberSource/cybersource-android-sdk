@@ -3,6 +3,8 @@ package com.cybersource.inappsdk.datamodel.response;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.math.BigDecimal;
+
 /**
  * Response object of gateway requests
  * 
@@ -16,6 +18,7 @@ public class SDKGatewayResponse implements Parcelable{
     private final String requestToken;
 	private final SDKGatewayResponseType type;
 	private final String authorizationCode;
+	private final BigDecimal authorizedAmount;
 	private final String date;
 	private final String time;
 	private final String encryptedPaymentData;
@@ -27,6 +30,7 @@ public class SDKGatewayResponse implements Parcelable{
 		this.requestToken = builder.requestToken;
 		this.type = builder.type;
 		this.authorizationCode = builder.authorizationCode;
+		this.authorizedAmount = builder.authorizedAmount;
 		this.date = builder.date;
 		this.time = builder.time;
 		this.encryptedPaymentData = builder.encryptedPaymentData;
@@ -80,6 +84,7 @@ public class SDKGatewayResponse implements Parcelable{
 		this.requestToken =  in.readString();
 		this.type = (SDKGatewayResponseType) in.readSerializable();
 		this.authorizationCode = in.readString();
+		this.authorizedAmount = BigDecimal.valueOf(in.readDouble());
 		this.date = in.readString();
 		this.time = in.readString();
 		this.encryptedPaymentData = in.readString();
@@ -98,6 +103,7 @@ public class SDKGatewayResponse implements Parcelable{
 		dest.writeString(requestToken);
 		dest.writeSerializable(type);
 		dest.writeString(authorizationCode);
+		dest.writeDouble(authorizedAmount.doubleValue());
 		dest.writeString(date);
 		dest.writeString(time);
 		dest.writeString(encryptedPaymentData);
@@ -123,6 +129,7 @@ public class SDKGatewayResponse implements Parcelable{
 		private final String requestToken;
 		private SDKResponseDecision decision;
 		private String authorizationCode;
+		private BigDecimal authorizedAmount;
 		private String date;
 		private String time;
 		private String encryptedPaymentData;
@@ -134,27 +141,32 @@ public class SDKGatewayResponse implements Parcelable{
 			this.requestToken = requestToken;
 		}
 
-		public SDKGatewayResponse.Builder setTime(String time) {
+		public SDKGatewayResponse.Builder time(String time) {
 			this.time = time;
 			return this;
 		}
 
-		public SDKGatewayResponse.Builder setAuthorizationCode(String authorizationCode) {
+		public SDKGatewayResponse.Builder authorizedAmount(BigDecimal authorizedAmount) {
+			this.authorizedAmount = authorizedAmount;
+			return this;
+		}
+
+		public SDKGatewayResponse.Builder authorizationCode(String authorizationCode) {
 			this.authorizationCode = authorizationCode;
 			return this;
 		}
 
-		public SDKGatewayResponse.Builder setDate(String date) {
+		public SDKGatewayResponse.Builder date(String date) {
 			this.date = date;
 			return this;
 		}
 
-		public SDKGatewayResponse.Builder setDecision(SDKResponseDecision decision) {
+		public SDKGatewayResponse.Builder decision(SDKResponseDecision decision) {
 			this.decision = decision;
 			return this;
 		}
 
-        public SDKGatewayResponse.Builder setEncryptedPaymentData(String data) {
+        public SDKGatewayResponse.Builder encryptedPaymentData(String data) {
             this.encryptedPaymentData = data;
             return this;
         }

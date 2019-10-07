@@ -3,8 +3,9 @@ package com.cybersource.inappsdk.connectors.inapp;
 import android.content.Context;
 
 import com.cybersource.inappsdk.common.SDKCore;
+import com.cybersource.inappsdk.common.utils.SDKUtils;
+import com.cybersource.inappsdk.connectors.inapp.transaction.client.InAppTransaction;
 import com.cybersource.inappsdk.connectors.inapp.connection.InAppConnectionData;
-import com.cybersource.inappsdk.datamodel.transaction.SDKTransactionObject;
 import com.cybersource.inappsdk.datamodel.transaction.callbacks.SDKApiConnectionCallback;
 
 import java.lang.ref.WeakReference;
@@ -20,10 +21,11 @@ public class InAppSDKApiClient {
     public enum Environment {ENV_TEST, ENV_PROD};
     private final Environment environment;
     private final String merchantID;
+    private String publicKey = null;
     private final SDKApiConnectionCallback connectionCallback;
 
     // endpoint API to be used once the 'performApi' method is invoked
-    public enum Api {API_ENCRYPTION}
+    public enum Api {API_ENCRYPTION, API_ANDROID_PAY}
 
     private InAppSDKApiClient(Builder builder) {
         this.context = builder.context;
@@ -39,6 +41,8 @@ public class InAppSDKApiClient {
         if(builder.apiTestEndpoint != null)
             configureTestEndpoint(builder.apiTestEndpoint);
         setActiveCurrentUrl();
+        SDKUtils.PUBLIC_KEY = builder.publicKey;
+        this.publicKey = builder.publicKey;
         configureConnectionTimeout(builder.connectionTimeout);
     }
 
@@ -75,20 +79,27 @@ public class InAppSDKApiClient {
         InAppGateway.dispose();
     }
 
-    public boolean performApi(Api api, SDKTransactionObject transactionObject, String messageSignature){
+    public boolean performApi(Api api, InAppTransaction transactionObject, String messageSignature){
         if(api == null)
             throw new NullPointerException("API must not be null");
         if(transactionObject == null)
             throw new NullPointerException("Transaction Object must not be null");
-        if(transactionObject.getCardData() == null)
-            throw new NullPointerException("Missing fields: Card Data must not be null");
         if(messageSignature == null || messageSignature.isEmpty())
             throw new NullPointerException("Invalid Message Signature");
 
         InAppGateway.getGateway().setMessageSignature(messageSignature);
         switch (api){
             case API_ENCRYPTION:
+                if(transactionObject.getCardData() == null)
+                    throw new NullPointerException("Missing fields: Card Data must not be null");
                 return InAppGateway.getGateway().performEncryption(transactionObject, this.connectionCallback);
+            case API_ANDROID_PAY:
+                if(transactionObject.getPurchaseOrder() == null)
+                    throw new NullPointerException("Missing fields: Purchase Order must not be null");
+                if(this.publicKey == null)
+                    throw new NullPointerException("Missing fields: Public Key must not be null");
+                return InAppGateway.getGateway().performAndroidPayTransaction(transactionObject,
+                        this.connectionCallback);
             default:
                 return false;
         }
@@ -102,6 +113,7 @@ public class InAppSDKApiClient {
         private String transactionNamespace = null;
         private String apiProdEndpoint = null;
         private String apiTestEndpoint = null;
+        private String publicKey = null;
         private int connectionTimeout;
 
         public Builder(Context context, Environment environment, String merchantID){
@@ -131,6 +143,11 @@ public class InAppSDKApiClient {
 
         public InAppSDKApiClient.Builder sdkApiTestEndpoint(String apiTestEndpoint) {
             this.apiTestEndpoint = apiTestEndpoint;
+            return this;
+        }
+
+        public InAppSDKApiClient.Builder publicKey(String publicKey) {
+            this.publicKey = publicKey;
             return this;
         }
 

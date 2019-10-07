@@ -1,6 +1,7 @@
 package com.cybersource.inappsdk.common.utils;
 
 import android.text.TextUtils;
+import android.util.Base64;
 
 import com.cybersource.inappsdk.common.SDKCore;
 import com.cybersource.inappsdk.common.SDKCurrency;
@@ -20,6 +21,7 @@ import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
@@ -79,6 +81,10 @@ public class SDKUtils {
 
 	/** Port: 443 */
 	private final static int PORT_443 = 443;
+
+    /** SEC PUBLIC KEY **/
+    public static String PUBLIC_KEY = null;
+
 
 	/**
 	 * This method checks if given class exists basing on its name. If it does
@@ -240,7 +246,8 @@ public class SDKUtils {
 		urlConnection.setReadTimeout(RECIEVE_DATA_TIMEOUT);
 		urlConnection.setDoOutput(doOutput);
 		urlConnection.setDoInput(true);
-		//android.util.Log.d("VMposUtils", "Connection: " + requestMethod + " -to- " + urlString);
+		android.util.Log.d("SDKUtils", "Connection: " + requestMethod + " -to- " + urlString);
+
 		return urlConnection;
 	}
 
@@ -322,36 +329,6 @@ public class SDKUtils {
 			return null;
 		}
 	}
-
-/*	public static HttpClient getHttpClientWithSSLSupport() {
-		try {
-			KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-			trustStore.load(null, null);
-
-			SSLSocketFactory sf = new MySSLSocketFactory(trustStore);
-			sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
-
-			HttpParams params = new BasicHttpParams();
-			params.setParameter(ConnManagerPNames.MAX_TOTAL_CONNECTIONS, CONNECTION_ATTEPTS);
-			params.setParameter(ConnManagerPNames.MAX_CONNECTIONS_PER_ROUTE, new ConnPerRouteBean(CONNECTION_ATTEPTS));
-			params.setParameter(HttpProtocolParams.USE_EXPECT_CONTINUE, false);
-			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
-			HttpConnectionParams.setConnectionTimeout(params, CONNECTION_TIMEOUT);
-			HttpConnectionParams.setSoTimeout(params, RECIEVE_DATA_TIMEOUT);
-
-			SchemeRegistry registry = new SchemeRegistry();
-			registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), PORT_80));
-			registry.register(new Scheme("https", sf, PORT_443));
-
-			ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
-
-			return new DefaultHttpClient(ccm, params);
-		} catch (Exception e) {
-			return new DefaultHttpClient();
-		}
-	}*/
 
 	private static class MySSLSocketFactory extends SSLSocketFactory {
 		SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -486,5 +463,37 @@ public class SDKUtils {
         BigDecimal amount = value.setScale(2, RoundingMode.CEILING);
         return amount.toPlainString();
     }
+
+
+	public static String getBase64Blob(String token) {
+		byte[] encodedTokenBytes = Base64.encode(token.getBytes(), Base64.NO_WRAP);
+		String encodedToken = new String(encodedTokenBytes);
+		return encodedToken;
+	}
+
+/*	private String createSecServiceJson(String androidPayBlob){
+		String secBlob = "{\"publicKeyHash\": \"" + getPublicKeyHash() + "\"," +
+				"\"version\": \"1.0\"," +
+				"\"data\":" + "\"" + androidPayBlob + "\"}";
+		return secBlob;
+	}*/
+
+    /**
+     * Uses the public passed in by client code through SDK API Client
+     * @return hashed sec public key
+     */
+	public static String getPublicKeyHash() {
+		MessageDigest digest = null;
+		try {
+			digest = MessageDigest.getInstance("SHA-256");
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		byte[] publicKeyHash;
+		byte[] pubKeyBytes = Base64.decode(PUBLIC_KEY, Base64.NO_WRAP);
+		publicKeyHash = digest.digest(pubKeyBytes);
+		String publicKeyHashString = new String(Base64.encode(publicKeyHash, Base64.NO_WRAP));
+		return publicKeyHashString;
+	}
 	
 }

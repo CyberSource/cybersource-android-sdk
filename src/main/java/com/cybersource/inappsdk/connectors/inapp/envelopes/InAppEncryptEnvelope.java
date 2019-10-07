@@ -5,9 +5,9 @@ import com.cybersource.inappsdk.connectors.inapp.datamodel.InAppBillTo;
 import com.cybersource.inappsdk.connectors.inapp.datamodel.InAppCard;
 import com.cybersource.inappsdk.connectors.inapp.responses.InAppResponseObject;
 import com.cybersource.inappsdk.connectors.inapp.services.InAppEncryptPaymentDataService;
-import com.cybersource.inappsdk.connectors.inapp.transaction.InAppEncryptionTransactionObject;
+import com.cybersource.inappsdk.connectors.inapp.transaction.InAppEnvelopeEncryptionTransactionObject;
+import com.cybersource.inappsdk.connectors.inapp.transaction.client.InAppTransaction;
 import com.cybersource.inappsdk.datamodel.response.SDKGatewayResponseType;
-import com.cybersource.inappsdk.datamodel.transaction.SDKTransactionObject;
 import com.cybersource.inappsdk.datamodel.transaction.fields.SDKBillTo;
 import com.cybersource.inappsdk.datamodel.transaction.fields.SDKCardData;
 import com.cybersource.inappsdk.soap.model.SDKXMLParentNode;
@@ -22,18 +22,18 @@ public class InAppEncryptEnvelope extends InAppBaseEnvelope {
     InAppEncryptEnvelope() {
     }
 
-    public InAppEncryptEnvelope(SDKTransactionObject transactionObject, String merchantId, String messageSignature) {
+    public InAppEncryptEnvelope(InAppTransaction transactionObject, String merchantId, String messageSignature) {
         createEnvelopeHeader(merchantId, messageSignature);
-        InAppEncryptionTransactionObject encryptionTransactionObject = convertTransactionObject(transactionObject, merchantId);
+        InAppEnvelopeEncryptionTransactionObject encryptionTransactionObject = convertTransactionObject(transactionObject, merchantId);
         createEnvelopeBody(encryptionTransactionObject);
     }
 
-    private void createEnvelopeBody(InAppEncryptionTransactionObject paymentObject) {
+    private void createEnvelopeBody(InAppEnvelopeEncryptionTransactionObject paymentObject) {
         SDKXMLParentNode request = this.createRequestMessage();
         paymentObject.updateEnvelope(request);
     }
 
-    private InAppEncryptionTransactionObject convertTransactionObject(SDKTransactionObject transactionObject,
+    private InAppEnvelopeEncryptionTransactionObject convertTransactionObject(InAppTransaction transactionObject,
                                                                                             String merchantId) {
 
         String merchantReferenceCode = transactionObject.getMerchantReferenceCode();
@@ -50,22 +50,15 @@ public class InAppEncryptEnvelope extends InAppBaseEnvelope {
         InAppBillTo bill = null;
         if (billTo != null) {
             bill = new InAppBillTo(billTo.getFirstName(), billTo.getLastName(),
-                    billTo.getPostalCode());
+                    billTo.getEmail(), billTo.getPostalCode(), billTo.getStreet1(),
+                    billTo.getStreet2(), billTo.getCity(), billTo.getState(),
+                    billTo.getCountry());
         }
 
         InAppEncryptPaymentDataService inAppEncryptPaymentDataService = new InAppEncryptPaymentDataService(true, null);
-                /*transactionObject.getPurchaseDetails().getCommerceIndicator());*/
 
-        // Faizan -- added the encrypted payment part
-        //VMposEncryptedPayment encryptedPayment = transactionObject.getEncryptedPayment();
-
-/*        VMposEncryptedPayment encryptedPayment = new VMposEncryptedPayment();
-        encryptedPayment.setEncodedData(getIDTechTestBlob());
-        encryptedPayment.setEncodedMetaData(VMposMessageSignature.MetadataEncodedValue);
-        encryptedPayment.setPaymentSolution(VMposMessageSignature.PAYMENT_SOLUTION_DEFAULT_VALUE);*/
-
-        InAppEncryptionTransactionObject inAppEncryptionTransactionObject = new InAppEncryptionTransactionObject(
-                merchantId, merchantReferenceCode, card, bill, inAppEncryptPaymentDataService, CLIENT_LIBRARY/*, encryptedPayment*/);
+        InAppEnvelopeEncryptionTransactionObject inAppEncryptionTransactionObject = new InAppEnvelopeEncryptionTransactionObject(
+                merchantId, merchantReferenceCode, card, bill, inAppEncryptPaymentDataService, CLIENT_LIBRARY);
         return inAppEncryptionTransactionObject;
     }
 

@@ -7,7 +7,7 @@ package com.cybersource.inappsdk.datamodel.response;
  */
 public enum SDKGatewayResponseType {
 
-    SDK_ENCRYPTION;
+    SDK_ENCRYPTION, SDK_ANDROID_PAY;
 
 
 }

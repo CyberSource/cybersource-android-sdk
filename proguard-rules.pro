@@ -18,14 +18,14 @@
     public protected *;
 }
 
--keep class com.visa.inappsdk.connectors.inapp.InAppGateway
+-keep class InAppGateway
 
 -keepclassmembernames class * {
     java.lang.Class class$(java.lang.String);
     java.lang.Class class$(java.lang.String, boolean);
 }
 
--keepclassmembers class com.visa.inappsdk.connectors.inapp.InAppSDKApiClient
+-keepclassmembers class InAppSDKApiClient
 
 -keepclasseswithmembernames,includedescriptorclasses class * {
     native <methods>;

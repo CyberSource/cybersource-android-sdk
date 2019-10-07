@@ -2,27 +2,22 @@ package com.cybersource.inappsdk.connectors.inapp.transaction;
 
 import com.cybersource.inappsdk.connectors.inapp.datamodel.InAppBillTo;
 import com.cybersource.inappsdk.connectors.inapp.datamodel.InAppCard;
-import com.cybersource.inappsdk.connectors.inapp.services.InAppEncryptPaymentDataService;
 import com.cybersource.inappsdk.soap.model.SDKXMLParentNode;
+import com.cybersource.inappsdk.connectors.inapp.services.InAppEncryptPaymentDataService;
 
 /**
  * Contains payment data that will be send to WebService in request body;
  * 
  * Created by fzubair on 10/8/2015.
  */
-public class InAppEncryptionTransactionObject extends InAppTransactionObject {
+public class InAppEnvelopeEncryptionTransactionObject extends InAppEnvelopeTransactionObject {
 
-	public InAppCard card;
-	public InAppBillTo billTo;
-	public String clientLibrary;
+	private InAppCard card;
+	private InAppBillTo billTo;
 
 	public InAppEncryptPaymentDataService encryptPaymentDataService;
 
-    private final String CLIENT_LIBRARY = "clientLibrary";
     public final String PAYMENT_SOLUTION = "paymentSolution";
-
-    //public VMposEncryptedPayment encryptedPayment;
-    //public String clientLibrary;
 
 	/**
 	 * All fields in constructor are required
@@ -32,12 +27,12 @@ public class InAppEncryptionTransactionObject extends InAppTransactionObject {
 	 * @param inAppWebServiceCard
 	 * @param inAppBillTo
 	 * @param encryptPaymentDataService
-	 * @param //shipTo
+     * @param clientLibrary
 	 */
-	public InAppEncryptionTransactionObject(String merchantId, String merchantReferenceCode,
-											InAppCard inAppWebServiceCard, InAppBillTo inAppBillTo,
-											InAppEncryptPaymentDataService encryptPaymentDataService,
-											String clientLibrary) {
+	public InAppEnvelopeEncryptionTransactionObject(String merchantId, String merchantReferenceCode,
+                                                    InAppCard inAppWebServiceCard, InAppBillTo inAppBillTo,
+                                                    InAppEncryptPaymentDataService encryptPaymentDataService,
+                                                    String clientLibrary) {
 		this.merchantID = merchantId;
 		this.merchantReferenceCode = merchantReferenceCode;
 		this.clientLibrary = clientLibrary;
@@ -49,9 +44,6 @@ public class InAppEncryptionTransactionObject extends InAppTransactionObject {
 	@Override
 	public void updateEnvelope(SDKXMLParentNode request) {
 		createMerchantData(request);
-		if(this.clientLibrary != null){
-			request.addTextNode(request.getNamespace(), CLIENT_LIBRARY, this.clientLibrary);
-		}
         if (this.billTo != null) {
             this.billTo.updateEnvelope(request);
         }

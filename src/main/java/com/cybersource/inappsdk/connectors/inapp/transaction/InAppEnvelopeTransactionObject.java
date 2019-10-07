@@ -9,13 +9,15 @@ import java.util.HashMap;
  * 
  * @author fzubair
  */
-public abstract class InAppTransactionObject {
+public abstract class InAppEnvelopeTransactionObject {
 
 	public final String MERCHANT_ID = "merchantID";
 	public final String MERCHANT_REFERENCE_CODE = "merchantReferenceCode";
+	private final String CLIENT_LIBRARY = "clientLibrary";
 
-	public String merchantID;
-	public String merchantReferenceCode;
+	protected String merchantID;
+	protected String merchantReferenceCode;
+	protected String clientLibrary;
 
 	/**
 	 * Updates request with fields needed in WebService request.
@@ -38,6 +40,9 @@ public abstract class InAppTransactionObject {
 		}
 		if (this.merchantReferenceCode != null) {
 			request.addTextNode(request.getNamespace(), MERCHANT_REFERENCE_CODE, this.merchantReferenceCode);
+		}
+		if(this.clientLibrary != null){
+			request.addTextNode(request.getNamespace(), CLIENT_LIBRARY, this.clientLibrary);
 		}
 	}
 }
