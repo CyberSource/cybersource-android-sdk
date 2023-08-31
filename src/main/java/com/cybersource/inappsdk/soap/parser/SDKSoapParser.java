@@ -1,11 +1,13 @@
 package com.cybersource.inappsdk.soap.parser;
 
+import android.util.Log;
+
+import com.cybersource.inappsdk.soap.model.SDKXMLNVPNode;
+import com.cybersource.inappsdk.soap.model.SDKXMLTextNode;
 import com.cybersource.inappsdk.soap.envelope.SDKBaseSoapEnvelope;
 import com.cybersource.inappsdk.soap.model.SDKXMLAttribute;
-import com.cybersource.inappsdk.soap.model.SDKXMLNVPNode;
 import com.cybersource.inappsdk.soap.model.SDKXMLNode;
 import com.cybersource.inappsdk.soap.model.SDKXMLParentNode;
-import com.cybersource.inappsdk.soap.model.SDKXMLTextNode;
 
 import java.util.ArrayList;
 import java.util.Collection;

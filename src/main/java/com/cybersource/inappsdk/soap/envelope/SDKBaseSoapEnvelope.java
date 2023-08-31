@@ -135,9 +135,9 @@ public class SDKBaseSoapEnvelope implements Serializable{
     }
 
     public void readFromParcel(Parcel in) {
-        body = in.readParcelable(com.visa.inappsdk.soap.model.SDKXMLBase.class.getClassLoader());
-        header = in.readParcelable(com.visa.inappsdk.soap.model.SDKXMLBase.class.getClassLoader());
-        envelopeNode = in.readParcelable(com.visa.inappsdk.soap.model.SDKXMLBase.class.getClassLoader());
+        body = in.readParcelable(SDKXMLBase.class.getClassLoader());
+        header = in.readParcelable(SDKXMLBase.class.getClassLoader());
+        envelopeNode = in.readParcelable(SDKXMLBase.class.getClassLoader());
         encoding = in.readString();
     }
 

@@ -3,7 +3,7 @@ package com.cybersource.inappsdk.datamodel;
 import com.cybersource.inappsdk.common.error.SDKGatewayError;
 
 /**
- * Allows to get @VMposGatewayError from error code.
+ * Allows to get @SDKGatewayError from error code.
  * 
  * @author fzubair
  */

@@ -1,7 +1,7 @@
 package com.cybersource.inappsdk.datamodel.transaction.fields;
 
-import com.cybersource.inappsdk.common.exceptions.SDKInvalidCardException;
 import com.cybersource.inappsdk.common.utils.SDKCardUtils;
+import com.cybersource.inappsdk.common.exceptions.SDKInvalidCardException;
 
 /**
  * This class represents the manual card entry.
